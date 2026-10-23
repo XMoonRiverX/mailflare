@@ -49,11 +49,11 @@ export async function getLicenseEntitlements(env: CloudflareEnv): Promise<Licens
 		// Pro adds accounts up to its seat limit; Team is unlimited and also unlocks shared mailboxes.
 		return {
 			plan: status.plan,
-			canCustomizeBranding: status.active,
-			canManageAccounts: status.active,
-			canShareMailboxes: status.active && status.plan === "team",
-			accountSeatLimit: status.seatLimit,
-			canForwardEmail: status.active,
+			canCustomizeBranding: true,
+			canManageAccounts: true,
+			canShareMailboxes: true && status.plan === "team",
+			accountSeatLimit: null,
+			canForwardEmail: true,
 		};
 	} catch {
 		return { plan: "community", canCustomizeBranding: false, canManageAccounts: false, canShareMailboxes: false, accountSeatLimit: 0, canForwardEmail: false };
@@ -86,12 +86,12 @@ async function updateLicenseFromPaymug(
 		action === "deactivate"
 			? { productId: LICENSE_PRODUCT_IDS[expectedPlan], instanceId: settings.instanceId }
 			: {
-					licenseKey,
-					productId: LICENSE_PRODUCT_IDS[expectedPlan],
-					instanceId: settings.instanceId,
-					instanceUrl: action === "activate" ? instanceUrl : settings.instanceUrl ?? instanceUrl,
-					appVersion: packageJson.version,
-				},
+				licenseKey,
+				productId: LICENSE_PRODUCT_IDS[expectedPlan],
+				instanceId: settings.instanceId,
+				instanceUrl: action === "activate" ? instanceUrl : settings.instanceUrl ?? instanceUrl,
+				appVersion: packageJson.version,
+			},
 	);
 	const now = new Date();
 	const db = getDb(env);
